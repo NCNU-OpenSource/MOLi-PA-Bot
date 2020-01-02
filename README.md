@@ -25,19 +25,25 @@
 - 音響
 
 ## Bot Command
-- `broadcast`
+- `/broadcast`
     - input text, broadcast in MOLi
-- `play`
+- `/play`
     - play music
-- `stop`
+- `/stop`
     - stop playing music
-- `skip`
+- `/skip`
     - skip song which is playing
-- `show`
+- `/show`
     - show all playlist
-- `add`
+- `/add`
     - search song on youtube and add to playlist
-- `delete`
+- `/delete`
     - delete a song from playlist
-- `cancel`
+- `/cancel`
     - cancel current command
+
+## 分工
+- 題目討論: 李漢偉 林其緯 李政峰
+- 程式撰寫: 李漢偉
+- 文件整理: 林其緯 李政峰
+- 簡報製作: 林其緯
