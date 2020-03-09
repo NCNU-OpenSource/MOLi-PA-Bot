@@ -25,21 +25,25 @@
 - 音響
 
 ## Bot Command
-- `/broadcast`
+- `broadcast`
     - input text, broadcast in MOLi
-- `/play`
+- `play`
     - play music
-- `/stop`
+- `stop`
     - stop playing music
-- `/skip`
+- `skip`
     - skip song which is playing
-- `/show`
+- `vol_up`
+    - turn up the volume
+- `vol_down`
+    - turn down the volume
+- `show`
     - show all playlist
-- `/add`
+- `add`
     - search song on youtube and add to playlist
-- `/delete`
+- `delete`
     - delete a song from playlist
-- `/cancel`
+- `cancel`
     - cancel current command
 
 ## 分工
