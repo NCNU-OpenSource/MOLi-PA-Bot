@@ -7,12 +7,15 @@ import pyttsx3
 import pafy, vlc
 from youtube_search import YoutubeSearch
 
+# broadCast message
 def broadCast(msg) :
     global player
     global playStatus
     print('Broadcasting', msg)
     engine = pyttsx3.init()
     engine.setProperty('rate', 130)
+    # if broadCast while playing music
+    # music will pause
     if isPlaying :
         playStatus = 'pause'
         player.pause()
@@ -31,11 +34,11 @@ def show() :
     global isPlaying, nowPlayingSong, playList
     show_str = ''
     if isPlaying :
-        show_str += 'Now Playing\n==========\n' + nowPlayingSong['title'] + '(Order By ' + nowPlayingSong['orderUser'] + ')\n\n'
+        show_str += 'Now Playing\n==========\n' + nowPlayingSong['title'] + '(Ordered By ' + nowPlayingSong['orderUser'] + ')\n\n'
     show_str += 'Next\n==========\n'
     if len(playList) > 0 :
         for i in range(len(playList)) :
-            show_str += str(i + 1) + '. ' + playList[i]['title'] + ' (Order By ' + playList[i]['orderUser'] + ')\n'
+            show_str += str(i + 1) + '. ' + playList[i]['title'] + ' (Ordered By ' + playList[i]['orderUser'] + ')\n'
         show_str += '\n'
     else :
         show_str += 'No Playlist!'
@@ -48,8 +51,7 @@ def delete(num) :
 
 # search song on youtube
 def search(msg) :
-    global search_result
-    search_result = YoutubeSearch(msg, max_results=10).to_dict()
+    return YoutubeSearch(msg, max_results=10).to_dict()
 
 # stop playing song
 def stop() :
@@ -63,10 +65,32 @@ def skip() :
     if isPlaying :
         player.stop()
 
+def vol_up() :
+    global player, volume
+    volUp = volume + 5
+    if volUp <= 100 :
+        player.audio_set_volume(volUp)
+        volume += 5
+        return True
+    else :
+        return False
+
+
+def vol_down() :
+    global player, volume
+    volDown = volume - 5
+    if volDown >= 5 :
+        player.audio_set_volume(volDown)
+        volume -= 5
+        return True
+    else :
+        return False
+
 # play song
 def play(msg) :
     global player
     global playStatus
+    global volume
     url = "https://www.youtube.com" + msg
     video = pafy.new(url)
     best = video.getbest()
@@ -76,7 +100,8 @@ def play(msg) :
     Media = Instance.media_new(playurl)
     Media.get_mrl()
     player.set_media(Media)
-    player.audio_set_volume(60)
+    volume = 60
+    player.audio_set_volume(volume)
     player.play()
     time.sleep(1.5)
     playStatus = 'play'
@@ -91,7 +116,7 @@ def play(msg) :
 def to_play() :
     global isPlaying, playing_thread, nowPlayingSong
     # playlist = open('playlist.txt', 'r+', encoding='utf8')
-    global playList, nowCmd, stopCmd
+    global playList, stopCmd
     while len(playList) > 0 and not stopCmd:
         nowPlayingSong = playList.pop(0)
         print('Now Playing =', nowPlayingSong['title'])
@@ -103,24 +128,27 @@ def to_play() :
     return
 
 def handle(msg) :
-    global nowCmd, playList, nowPlayingSong, isPlaying
-    global playing_thread, search_result, nowUser
+    global playList, nowPlayingSong, isPlaying
+    global playing_thread, user_status
     content_type, chat_type, chat_id = telepot.glance(msg)
     print(content_type, chat_type, chat_id)
     print(msg)
-    if nowUser == '' :
-        nowUser = msg['chat']['username']
-    newMsgUser = msg['chat']['username']
-    print(nowUser, newMsgUser)
-    # 避免指令被搶走問題
-    if nowUser == newMsgUser :
-        # 先確定使用者有傳送文字訊息
+    # 先檢查是否有 Username
+    if msg['chat']['username'] == '' :
+        bot.sendMessage(chat_id, 'Please set a UserName')
+    else :
+        user_id = msg['chat']['username']
+        # 檢查使用者是否傳送文字訊息
         if content_type == 'text' :
-            # 確認是否為哪個指令
-            if msg['text'] == '/broadcast' :
+            # 確定是什麼指令
+            if msg['text'] == '/start' :
+                # 介紹機器人
+                bot.sendMessage(chat_id, 'Order music and play music in MOLi')
+
+            elif msg['text'] == '/broadcast' :
                 # input text, broadcast in MOLi
                 bot.sendMessage(chat_id, 'Now send me text you want to broadcast')
-                nowCmd = '/broadcast'
+                user_status[user_id] = 'broadcast'
 
             elif msg['text'] == '/play' :
                 # choose a playlist to play music
@@ -134,104 +162,109 @@ def handle(msg) :
                         playing_thread = threading.Thread(target=to_play, args=())
                         playing_thread.start()
                         isPlaying = True
-                nowUser = ''
+                        bot.sendMessage(chat_id, "Playing now", reply_to_message_id = msg['message_id'])
 
             elif msg['text'] == '/stop' :
                 stop()
                 bot.sendMessage(chat_id, 'Now stop')
-                nowUser = ''
 
             elif msg['text'] == '/skip' :
                 # skip now playing song
                 skip()
-                nowUser = ''
+
+            elif msg['text'] == '/vol_up' :
+                # skip now playing song
+                if not vol_up() :
+                    bot.sendMessage(chat_id, 'Too loud!', reply_to_message_id = msg['message_id'])
+                else :
+                    bot.sendMessage(chat_id, 'Volumn:' + str(volume))
+
+            elif msg['text'] == '/vol_down' :
+                # skip now playing song
+                if not vol_down() :
+                    bot.sendMessage(chat_id, 'Too low!', reply_to_message_id = msg['message_id'])
+                else :
+                    bot.sendMessage(chat_id, 'Volumn:' + str(volume))
 
             elif msg['text'] == '/show' :
                 # show all playlist
                 reply_str = show()
                 bot.sendMessage(chat_id, reply_str, reply_to_message_id = msg['message_id'])
-                nowUser = ''
 
             elif msg['text'] == '/add' :
                 # search song on youtube and add to list
                 bot.sendMessage(chat_id, 'Now please send some words of the song, which you want to add')
-                nowCmd = '/add'
+                user_status[user_id] = 'add'
 
             elif msg['text'] == '/delete' :
                 # delete a song from playlist
                 list_str = ''
                 if len(playList) > 0 :
-                    bot_reply = 'Plese choose a number of songs in playlist, which you want to delete.'
+                    bot_reply = 'Please choose a number of songs in playlist, which you want to delete.'
                     bot.sendMessage(chat_id, bot_reply, reply_to_message_id = msg['message_id'])
                     time.sleep(1)
                     for i in range(len(playList)) :
                         list_str += str(i + 1) + '. ' + playList[i]['title'] + '\n'
                     bot.sendMessage(chat_id, list_str)
-                    nowCmd = '/delete'
+                    user_status[user_id] = 'delete'
                 else :
                     bot.sendMessage(chat_id, 'No playlist!', reply_to_message_id = msg['message_id'])
-                    nowCmd = ''
-                    nowUser = ''
 
             elif msg['text'] == '/cancel' :
+                del user_status[user_id]
                 bot.sendMessage(chat_id, 'Ok, command canceled.')
-                nowCmd = ''
-                nowUser = ''
 
             else :
-                # 確認是否有當前在執行的指令
-                if nowCmd == '/broadcast' :
-                    bot.sendMessage(chat_id, 'Broadcasting...')
-                    # 呼叫函數廣播文字
-                    broadCast(msg['text'])
-                    # 完成事情後洗掉指令狀態
-                    nowCmd = ''
-                    nowUser = ''
+                # 檢查使用者是否有指令狀態，若沒有就不理他
+                if user_status.__contains__(user_id) :
+                    if user_status[user_id] == 'broadcast' :
+                        bot.sendMessage(chat_id, 'Broadcasting...')
+                        # 呼叫函數廣播文字
+                        broadCast(msg['text'])
+                        # 完成事情後洗掉指令狀態
+                        bot.sendMessage(chat_id, 'Broadcast over')
+                        del user_status[user_id]
 
-                elif nowCmd == '/delete' :
-                    delete(msg['text'])
-                    show_str = show()
-                    bot.sendMessage(chat_id, 'Done. Following is new playlist')
-                    time.sleep(1)
-                    bot.sendMessage(chat_id, show_str)
-                    # 完成事情後洗掉指令狀態
-                    nowCmd = ''
-                    nowUser = ''
+                    elif user_status[user_id] == 'delete' :
+                        delete(msg['text'])
+                        show_str = show()
+                        bot.sendMessage(chat_id, 'Done. Following is new playlist')
+                        time.sleep(1)
+                        bot.sendMessage(chat_id, show_str)
+                        # 完成事情後洗掉指令狀態
+                        del user_status[user_id]
 
-                elif nowCmd == '/add' :
-                    search(msg['text'])
-                    print_result = ''
-                    for i in range(len(search_result)) :
-                        print_result += str(i + 1) + '. ' + search_result[i]['title'] + '\nhttps://www.youtube.com' + search_result[i]['link'] + '\n'
-                    # 完成事情後洗掉指令狀態
-                    bot.sendMessage(chat_id, 'Following is search reasult, please choose a number of songs,\nwhich will be add to playlist', reply_to_message_id = msg['message_id'])
-                    time.sleep(1)
-                    bot.sendMessage(chat_id, print_result, disable_web_page_preview=True)
-                    nowCmd = 'await_add'
+                    elif user_status[user_id] == 'add' :
+                        search_result = search(msg['text'])
+                        print_result = ''
+                        for i in range(len(search_result)) :
+                            print_result += str(i + 1) + '. ' + search_result[i]['title'] + '\nhttps://www.youtube.com' + search_result[i]['link'] + '\n'
+                        bot.sendMessage(chat_id, 'Following is search result, please choose a number of songs,\nwhich will be add to playlist', reply_to_message_id = msg['message_id'])
+                        time.sleep(1)
+                        bot.sendMessage(chat_id, print_result, disable_web_page_preview=True)
+                        user_status[user_id] = ['await_add', search_result]
 
-                elif nowCmd == 'await_add' :
-                    addSong = search_result[int(msg['text']) - 1]
-                    addSong['orderUser'] = '@' + nowUser
-                    playList += [addSong]
-                    show_str = show()
-                    bot.sendMessage(chat_id, 'Done. Following is new playlist')
-                    time.sleep(1)
-                    bot.sendMessage(chat_id, show_str)
-                    nowCmd = ''
-                    nowUser = ''
-    else :
-        bot.sendMessage(chat_id, '@' + nowUser + ' is using this bot, please wait.')
+                    elif user_status[user_id][0] == 'await_add' :
+                        search_result = user_status[user_id][1]
+                        addSong = search_result[int(msg['text']) - 1]
+                        addSong['orderUser'] = '@' + user_id
+                        playList += [addSong]
+                        show_str = show()
+                        bot.sendMessage(chat_id, 'Done. Following is new playlist')
+                        time.sleep(1)
+                        bot.sendMessage(chat_id, show_str)
+                        del user_status[user_id]
 
-# global variable
+# global variables
+user_status = dict()
 search_result = []
 playStatus = 'stop'
 isPlaying = False
 playList = []
 playing_thread = None
-nowCmd = ''
-nowUser = ''
 stopCmd = False
 player = None
+volume = 0
 
 if __name__ == '__main__' :
     myFile = open('TOKEN.txt')
