@@ -165,8 +165,10 @@ def handle(msg) :
                         bot.sendMessage(chat_id, "Playing now", reply_to_message_id = msg['message_id'])
 
             elif msg['text'] == '/stop' :
-                stop()
-                bot.sendMessage(chat_id, 'Now stop')
+                if playing_thread != None :
+                    if playing_thread.is_alive() :
+                        stop()
+                        bot.sendMessage(chat_id, 'Now stop')
 
             elif msg['text'] == '/skip' :
                 # skip now playing song
