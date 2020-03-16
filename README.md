@@ -25,26 +25,30 @@
 - 音響
 
 ## Bot Command
-- `broadcast`
-    - input text, broadcast in MOLi
+- `show`
+    - show all public playlist
+- `add`
+    - search song on youtube and add to public playlist
 - `play`
     - play music
-- `stop`
-    - stop playing music
 - `skip`
     - skip song which is playing
+- `stop`
+    - stop playing music
 - `vol_up`
     - turn up the volume
 - `vol_down`
     - turn down the volume
-- `show`
-    - show all playlist
-- `add`
-    - search song on youtube and add to playlist
-- `delete`
-    - delete a song from playlist
-- `cancel`
-    - cancel current command
+- `show_plist`
+    - show your own personal playlist
+- `add_from_plist`
+    - add songs to public playlist from your playlist
+- `play_all_plist`
+    - play all songs from your playlist randomly
+- `edit_plist`
+    - delete songs from your own personal playlist
+- `broadcast`
+    - input text, broadcast in MOLi
 
 ## 分工
 - 題目討論: 李漢偉 林其緯 李政峰
