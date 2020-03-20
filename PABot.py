@@ -14,6 +14,7 @@ def broadcast(msg) :
     print('Broadcasting', msg)
     engine = pyttsx3.init()
     engine.setProperty('rate', 130)
+    engine.setProperty('voice', 'zh')
     # if broadcast while playing music
     # music will pause
     if isPlaying :
