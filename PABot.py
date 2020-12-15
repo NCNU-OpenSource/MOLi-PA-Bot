@@ -41,7 +41,7 @@ def show_plist(user_id) :
     else :
         reply_str = ''
         for i in range(len(personal_plist)) :
-            reply_str += str(i + 1) + '. ' + personal_plist[i]['title'] + '\nhttps://www.youtube.com' + personal_plist[i]['link'] + '\n'
+            reply_str += str(i + 1) + '. ' + personal_plist[i]['title'] + '\nhttps://www.youtube.com' + personal_plist[i]['url_suffix'] + '\n'
         return reply_str
 
 # 檢查要新增的歌曲是否已經在 playlist 中
@@ -50,7 +50,7 @@ def checkPlistHasExisted(user_id, toAddSong) :
     data = file.readlines()
     file.close()
     for i in data :
-        if toAddSong['link'] in i :
+        if toAddSong['url_suffix'] in i :
             result = 'This song is already in your playlist'
             return False, result
     return True, 'OK'
@@ -223,7 +223,7 @@ def play(msg) :
     volume = 60
     player.audio_set_volume(volume)
     player.play()
-    time.sleep(1.5)
+    time.sleep(5)
     playStatus = 'play'
     # duration = player.get_length() / 1000
     # time.sleep(duration)
@@ -240,7 +240,7 @@ def to_play() :
     while len(playList) > 0 and not stopCmd:
         nowPlayingSong = playList.pop(0)
         print('Now Playing =', nowPlayingSong['title'])
-        play(nowPlayingSong['link'])
+        play(nowPlayingSong['url_suffix'])
 
     stopCmd = False
     isPlaying = False
@@ -437,9 +437,10 @@ def handle(msg) :
 
                     elif user_status[user_id] == 'add' :
                         search_result = search(msg['text'])
+                        print(search_result)
                         print_result = ''
                         for i in range(len(search_result)) :
-                            print_result += str(i + 1) + '. ' + search_result[i]['title'] + '\nhttps://www.youtube.com' + search_result[i]['link'] + '\n'
+                            print_result += str(i + 1) + '. ' + search_result[i]['title'] + '\nhttps://www.youtube.com' + search_result[i]['url_suffix'] + '\n'
                         bot.sendMessage(chat_id, 'Following is search result, please choose a number of songs,\nwhich will be add to playlist', reply_to_message_id = msg['message_id'])
                         time.sleep(1)
                         bot.sendMessage(chat_id, print_result, disable_web_page_preview=True)
