@@ -4,6 +4,8 @@ import telepot
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup as InlineMarkup
 from telepot.namedtuple import InlineKeyboardButton as InlineBtn
+from telepot.namedtuple import ReplyKeyboardMarkup as ReplyMarkup
+from telepot.namedtuple import KeyboardButton as Btn
 # for broadcast 文字轉語音
 import pyttsx3
 # for playing music
@@ -288,6 +290,15 @@ def on_chat_message(msg) :
             if msg['text'] == '/start' :
                 # 介紹機器人
                 bot.sendMessage(chat_id, 'Order music and play music in MOLi')
+                replyBtns = [
+                    [Btn(text='/show'), Btn(text='/add'), Btn(text='/play'), Btn(text='/skip'), Btn(text='/stop')],
+                    [Btn(text='/vol_up'), Btn(text='/show_plist'), Btn(text='/vol_down')],
+                    [Btn(text='/add_from_plist'), Btn(text='/play_all_plist')],
+                    [Btn(text='/edit_plist'), Btn(text='/create_plist')],
+                    [Btn(text='/broadcast')]
+                ]
+                time.sleep(1)
+                bot.sendMessage(chat_id, 'Here\'s all function buttons', reply_markup=ReplyMarkup(keyboard=replyBtns))
 
             elif msg['text'] == '/broadcast' :
                 # input text, broadcast in MOLi
