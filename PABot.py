@@ -292,7 +292,7 @@ def on_chat_message(msg) :
                 bot.sendMessage(chat_id, 'Order music and play music in MOLi')
                 replyBtns = [
                     [Btn(text='/show'), Btn(text='/add'), Btn(text='/play'), Btn(text='/skip'), Btn(text='/stop')],
-                    [Btn(text='/vol_up'), Btn(text='/show_plist'), Btn(text='/vol_down')],
+                    [Btn(text='/vol_down'), Btn(text='/show_plist'), Btn(text='/vol_up')],
                     [Btn(text='/add_from_plist'), Btn(text='/play_all_plist')],
                     [Btn(text='/edit_plist'), Btn(text='/create_plist')],
                     [Btn(text='/broadcast')]
