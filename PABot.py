@@ -7,7 +7,8 @@ from telepot.namedtuple import InlineKeyboardButton as InlineBtn
 from telepot.namedtuple import ReplyKeyboardMarkup as ReplyMarkup
 from telepot.namedtuple import KeyboardButton as Btn
 # for broadcast 文字轉語音
-import pyttsx3
+from gtts import gTTS
+from os import system
 # for playing music
 import pafy, vlc
 from youtube_search import YoutubeSearch
@@ -17,22 +18,20 @@ def broadcast(msg) :
     global player
     global playStatus
     print('Broadcasting', msg)
-    engine = pyttsx3.init()
-    engine.setProperty('rate', 130)
-    engine.setProperty('voice', 'zh')
+    language = 'zh'
+    sound_file = gTTS(text=msg, lang=language, slow=False) 
+    sound_file.save("output.mp3") 
     # if broadcast while playing music
     # music will pause
     if isPlaying :
         playStatus = 'pause'
         player.pause()
-        engine.say(msg)
-        engine.runAndWait()
+        system("vlc --play-and-exit output.mp3")
         player.pause()
         time.sleep(1)
         playStatus = 'play'
     else :
-        engine.say(msg)
-        engine.runAndWait()
+        system("vlc --play-and-exit output.mp3")
     return
 
 # show_plist - show your own personal playlist
