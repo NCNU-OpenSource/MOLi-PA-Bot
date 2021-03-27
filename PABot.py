@@ -26,12 +26,12 @@ def broadcast(msg) :
     if isPlaying :
         playStatus = 'pause'
         player.pause()
-        system("vlc --play-and-exit output.mp3")
+        system("cvlc --play-and-exit output.mp3")
         player.pause()
         time.sleep(1)
         playStatus = 'play'
     else :
-        system("vlc --play-and-exit output.mp3")
+        system("cvlc --play-and-exit output.mp3")
     return
 
 # show_plist - show your own personal playlist
