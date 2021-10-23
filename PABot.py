@@ -290,14 +290,32 @@ def on_chat_message(msg) :
                 # 介紹機器人
                 bot.sendMessage(chat_id, 'Order music and play music in MOLi')
                 replyBtns = [
-                    [Btn(text='/show'), Btn(text='/add'), Btn(text='/play'), Btn(text='/skip'), Btn(text='/stop')],
+                    [Btn(text='/help'), Btn(text='/show'), Btn(text='/add'), Btn(text='/play'), Btn(text='/skip'), Btn(text='/stop')],
                     [Btn(text='/vol_down'), Btn(text='/show_plist'), Btn(text='/vol_up')],
                     [Btn(text='/add_from_plist'), Btn(text='/play_all_plist')],
                     [Btn(text='/edit_plist'), Btn(text='/create_plist')],
-                    [Btn(text='/broadcast')]
+                    [Btn(text='/broadcast')],
                 ]
                 time.sleep(1)
                 bot.sendMessage(chat_id, 'Here\'s all function buttons', reply_markup=ReplyMarkup(keyboard=replyBtns))
+            elif msg['text'] == '/help' :
+                intro = \
+                    'show - show all public playlist\n'+\
+                    'add - search song on youtube and add to public playlist\n'+\
+                    'play - play music\n'+\
+                    'skip - skip song which is playing\n'+\
+                    'stop - stop playing music\n'+\
+                    'vol_up - turn up the volume\n'+\
+                    'vol_down - turn down the volume\n'+\
+                    'show_plist - show your own personal playlist\n'+\
+                    'add_from_plist - add songs to public playlist from your playlist\n'+\
+                    'play_all_plist - play all songs from your playlist randomly\n'+\
+                    'edit_plist - delete songs from your own personal playlist\n'+\
+                    'create_plist - create a personal playlist\n'+\
+                    'broadcast - input text, broadcast in MOLi'
+                # 介紹機器人
+                bot.sendMessage(chat_id, intro)
+                
 
             elif msg['text'] == '/broadcast' :
                 # input text, broadcast in MOLi
