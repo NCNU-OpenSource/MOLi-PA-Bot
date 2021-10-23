@@ -217,7 +217,7 @@ def play(msg) :
     global volume
     url = "https://www.youtube.com" + msg
     video = pafy.new(url)
-    best = video.getbest()
+    best = video.getbestaudio()
     playurl = best.url
     Instance = vlc.Instance()
     player = Instance.media_player_new()
