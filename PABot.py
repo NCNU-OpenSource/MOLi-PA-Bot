@@ -219,7 +219,7 @@ def play(msg) :
     video = pafy.new(url)
     best = video.getbestaudio()
     playurl = best.url
-    Instance = vlc.Instance()
+    Instance = vlc.Instance("prefer-insecure")
     player = Instance.media_player_new()
     Media = Instance.media_new(playurl)
     Media.get_mrl()
