@@ -1,5 +1,9 @@
 # MOLi_PA_Bot
 
+由於套件和程式架構的各種問題，本專案將停止更新
+並另開一份新的專案來修正這些問題
+專案連結 ---> [點我](https://github.com/UncleHanWei/PA_Bot)
+
 ## Bot_id
 @MOLi_PA_bot
 
